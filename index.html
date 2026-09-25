@@ -184,7 +184,18 @@
 
         // 2. கால அட்டவணை (புதிய நேரங்கள் மட்டும் மாற்றப்பட்டுள்ளன)
         const schedules = [
-            { hour: 21, minute: 15, duration: 20, halls: ['Hall 2', 'Hall 3', 'Hall 5'] }      // 09:15 PM
+            { hour: 11, minute: 45, duration: 20, halls: ['Hall 2', 'Hall 3', 'Hall 5'] }, // 11:45 AM
+            { hour: 14, minute: 45, duration: 20, halls: ['Hall 5'] },                     // 02:45 PM
+            { hour: 14, minute: 55, duration: 20, halls: ['Hall 2'] },                     // 02:55 PM
+            { hour: 15, minute: 5,  duration: 20, halls: ['Hall 3'] },                     // 03:05 PM
+            { hour: 17, minute: 45, duration: 20, halls: ['Hall 5'] },                     // 05:45 PM
+            { hour: 17, minute: 55, duration: 20, halls: ['Hall 2'] },                     // 05:55 PM
+            { hour: 18, minute: 20, duration: 20, halls: ['Hall 3'] },                     // 06:20 PM
+            { hour: 20, minute: 45, duration: 20, halls: ['Hall 5'] },                     // 08:45 PM
+            { hour: 21, minute: 0,  duration: 20, halls: ['Hall 1', 'Hall 2'] },           // 09:00 PM
+            { hour: 21, minute: 15, duration: 20, halls: ['Hall 3'] },                     // 09:15 PM
+            { hour: 23, minute: 55, duration: 20, halls: ['Hall 3'] },                     // 11:55 PM
+            { hour: 0,  minute: 0,  duration: 20, halls: ['Hall 5'] }               
         ];
 
         // 3. தியேட்டர் நிலையை புதுப்பிக்கும் முதன்மை லாஜிக் (மாற்றப்படவில்லை)
