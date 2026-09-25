@@ -176,12 +176,10 @@
     </header>
     
     <div class="main">
-        <!-- இடது பக்கம் லோகோ படம் -->
         <div class="poster-panel">
             <img src="poster1.jpeg" alt="Logo" id="mainPoster">
         </div>
         
-        <!-- வலது பக்கம் வீடியோ மற்றும் தகவல் -->
         <div class="info-panel" id="infoPanel">
             <div class="video-container" id="videoContainer">
                 <video id="promoVideo" autoplay muted playsinline preload="auto" webkit-playsinline></video>
@@ -198,24 +196,20 @@
     </div>
 
     <script>
-        // 1. வீடியோ பட்டியல்
         const videoList = ['video1.mp4', 'video2.mp4', 'video3.mp4'];
         let videoIndex = 0;
         const promoVideo = document.getElementById('promoVideo');
 
         function playNextVideo() {
             if (videoList.length > 0) {
-                promoVideo.muted = true; // TV பிரவுசருக்காக Mute கட்டாயமாக்கப்பட்டு உள்ளது
+                promoVideo.muted = true;
                 promoVideo.src = videoList[videoIndex];
+                promoVideo.load(); // TV Buffer ஆகாமல் இருக்க Load கட்டளை சேர்க்கப்பட்டுள்ளது
                 
                 var playPromise = promoVideo.play();
                 if (playPromise !== undefined) {
                     playPromise.catch(function(error) {
-                        console.log("TV Autoplay Prevented:", error);
-                        // TV Play ஆகத் தவறினால் மீண்டும் முயற்சிக்கிறது
-                        setTimeout(function() {
-                            promoVideo.play();
-                        }, 1000);
+                        console.log("Autoplay error:", error);
                     });
                 }
                 videoIndex = (videoIndex + 1) % videoList.length;
@@ -224,12 +218,10 @@
 
         promoVideo.addEventListener('ended', playNextVideo);
 
-        // TV தயாரானதும் வீடியோ பிளே செய்யும்
         window.addEventListener('load', function() {
             playNextVideo();
         });
 
-        // 2. கால அட்டவணை
         const schedules = [
             { hour: 11, minute: 45, duration: 20, halls: ['Hall 2', 'Hall 3', 'Hall 5'] },
             { hour: 14, minute: 45, duration: 20, halls: ['Hall 5'] },
@@ -245,7 +237,6 @@
             { hour: 0,  minute: 0,  duration: 20, halls: ['Hall 5'] }
         ];
 
-        // 3. நேரத்தை கண்காணிக்கும் லாஜிக்
         function updateDisplay() {
             const now = new Date();
             const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
@@ -316,7 +307,6 @@
         updateDisplay();
         setInterval(updateDisplay, 5000); 
 
-        // கடிகாரம்
         setInterval(function() {
             const now = new Date();
             let hours = now.getHours();
