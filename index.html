@@ -176,7 +176,7 @@
     </header>
     
     <div class="main">
-        <!-- இடது பக்கம் லோகோ படம் (poster1.jpeg என மாற்றப்பட்டுள்ளது) -->
+        <!-- இடது பக்கம் லோகோ படம் -->
         <div class="poster-panel">
             <img src="poster1.jpeg" alt="Logo" id="mainPoster">
         </div>
@@ -184,7 +184,7 @@
         <!-- வலது பக்கம் வீடியோ மற்றும் தகவல் -->
         <div class="info-panel" id="infoPanel">
             <div class="video-container" id="videoContainer">
-                <video id="promoVideo" autoplay muted playsinline></video>
+                <video id="promoVideo" autoplay muted playsinline preload="auto" webkit-playsinline></video>
             </div>
 
             <div class="now-seating" id="seatingBadge">NOW SEATING</div>
@@ -198,21 +198,36 @@
     </div>
 
     <script>
-        // 1. வீடியோ பட்டியல் (உங்கள் வீடியோ பெயர்கள் சரியாக உள்ளதா என சரிபார்க்கவும்)
+        // 1. வீடியோ பட்டியல்
         const videoList = ['video1.mp4', 'video2.mp4', 'video3.mp4'];
         let videoIndex = 0;
         const promoVideo = document.getElementById('promoVideo');
 
         function playNextVideo() {
             if (videoList.length > 0) {
+                promoVideo.muted = true; // TV பிரவுசருக்காக Mute கட்டாயமாக்கப்பட்டு உள்ளது
                 promoVideo.src = videoList[videoIndex];
-                promoVideo.play().catch(e => console.log("Video Play Error:", e));
+                
+                var playPromise = promoVideo.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(function(error) {
+                        console.log("TV Autoplay Prevented:", error);
+                        // TV Play ஆகத் தவறினால் மீண்டும் முயற்சிக்கிறது
+                        setTimeout(function() {
+                            promoVideo.play();
+                        }, 1000);
+                    });
+                }
                 videoIndex = (videoIndex + 1) % videoList.length;
             }
         }
 
         promoVideo.addEventListener('ended', playNextVideo);
-        playNextVideo();
+
+        // TV தயாரானதும் வீடியோ பிளே செய்யும்
+        window.addEventListener('load', function() {
+            playNextVideo();
+        });
 
         // 2. கால அட்டவணை
         const schedules = [
@@ -264,7 +279,6 @@
             const videoContainer = document.getElementById('videoContainer');
 
             if (uniqueHalls.length > 0) {
-                // Now Seating நேரத்தில் வீடியோ நின்று மறைந்துவிடும்
                 videoContainer.style.display = 'none';
                 promoVideo.pause();
 
@@ -280,7 +294,6 @@
                     hallList.appendChild(hallDiv);
                 });
             } else if (isUpcomingActive) {
-                // 10 நிமிடத்திற்கு முன் ஸ்நாக்ஸ் அலெர்ட்
                 videoContainer.style.display = 'none';
                 promoVideo.pause();
 
@@ -288,13 +301,13 @@
                 hallList.style.display = 'none';
                 upcomingAlert.style.display = 'block';
             } else {
-                // மற்ற நேரங்களில் வீடியோ தொடரும்
                 seatingBadge.style.display = 'none';
                 hallList.style.display = 'none';
                 upcomingAlert.style.display = 'none';
 
                 if (videoContainer.style.display === 'none' || videoContainer.style.display === '') {
                     videoContainer.style.display = 'block';
+                    promoVideo.muted = true;
                     promoVideo.play().catch(e => console.log("Play error:", e));
                 }
             }
