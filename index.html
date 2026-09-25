@@ -182,7 +182,7 @@
         
         <div class="info-panel" id="infoPanel">
             <div class="video-container" id="videoContainer">
-                <video id="promoVideo" autoplay muted playsinline preload="auto" webkit-playsinline></video>
+                <video id="promoVideo" autoplay muted playsinline preload="auto"></video>
             </div>
 
             <div class="now-seating" id="seatingBadge">NOW SEATING</div>
@@ -204,19 +204,26 @@
             if (videoList.length > 0) {
                 promoVideo.muted = true;
                 promoVideo.src = videoList[videoIndex];
-                promoVideo.load(); // TV Buffer ஆகாமல் இருக்க Load கட்டளை சேர்க்கப்பட்டுள்ளது
                 
                 var playPromise = promoVideo.play();
                 if (playPromise !== undefined) {
                     playPromise.catch(function(error) {
-                        console.log("Autoplay error:", error);
+                        console.log("Play Error:", error);
                     });
                 }
+                
+                // அடுத்த வீடியோவிற்கு இன்டெக்ஸ் மாறும்
                 videoIndex = (videoIndex + 1) % videoList.length;
             }
         }
 
+        // வீடியோ முடிந்ததும் அடுத்த வீடியோ தானாக பிளே ஆகும்
         promoVideo.addEventListener('ended', playNextVideo);
+
+        // ஏதேனும் வீடியோ லோட் ஆகாவிட்டால் 3 நொடியில் அடுத்த வீடியோவிற்கு மாறும்
+        promoVideo.addEventListener('error', function() {
+            setTimeout(playNextVideo, 3000);
+        });
 
         window.addEventListener('load', function() {
             playNextVideo();
@@ -270,8 +277,10 @@
             const videoContainer = document.getElementById('videoContainer');
 
             if (uniqueHalls.length > 0) {
-                videoContainer.style.display = 'none';
-                promoVideo.pause();
+                if (videoContainer.style.display !== 'none') {
+                    videoContainer.style.display = 'none';
+                    promoVideo.pause();
+                }
 
                 seatingBadge.style.display = 'block';
                 hallList.style.display = 'flex';
@@ -285,8 +294,10 @@
                     hallList.appendChild(hallDiv);
                 });
             } else if (isUpcomingActive) {
-                videoContainer.style.display = 'none';
-                promoVideo.pause();
+                if (videoContainer.style.display !== 'none') {
+                    videoContainer.style.display = 'none';
+                    promoVideo.pause();
+                }
 
                 seatingBadge.style.display = 'none';
                 hallList.style.display = 'none';
@@ -296,7 +307,8 @@
                 hallList.style.display = 'none';
                 upcomingAlert.style.display = 'none';
 
-                if (videoContainer.style.display === 'none' || videoContainer.style.display === '') {
+                // வீடியோ ஏற்கனவே ஓடிக் கொண்டிருந்தால் அதை மீண்டும் Restart செய்யாது!
+                if (videoContainer.style.display === 'none') {
                     videoContainer.style.display = 'block';
                     promoVideo.muted = true;
                     promoVideo.play().catch(e => console.log("Play error:", e));
