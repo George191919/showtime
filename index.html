@@ -127,13 +127,17 @@
             z-index: 2;
         }
         .hall { 
-            font-size: 2.6rem; 
+            font-size: 2.8rem; 
+            font-weight: bold;
             background: #333; 
             padding: 20px 50px; 
             border-radius: 10px; 
-            width: 80%; 
+            width: 85%; 
             box-sizing: border-box; 
             border-left: 5px solid #e50914;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         /* ஸ்நாக்ஸ் அறிவிப்பு */
@@ -212,15 +216,12 @@
                     });
                 }
                 
-                // அடுத்த வீடியோவிற்கு இன்டெக்ஸ் மாறும்
                 videoIndex = (videoIndex + 1) % videoList.length;
             }
         }
 
-        // வீடியோ முடிந்ததும் அடுத்த வீடியோ தானாக பிளே ஆகும்
         promoVideo.addEventListener('ended', playNextVideo);
 
-        // ஏதேனும் வீடியோ லோட் ஆகாவிட்டால் 3 நொடியில் அடுத்த வீடியோவிற்கு மாறும்
         promoVideo.addEventListener('error', function() {
             setTimeout(playNextVideo, 3000);
         });
@@ -228,6 +229,14 @@
         window.addEventListener('load', function() {
             playNextVideo();
         });
+
+        // ஹால்களுக்கான திசைச் குறியீடுகள் (Icons Map)
+        const hallIcons = {
+            'Hall 1': '👈 HALL 1',
+            'Hall 2': 'HALL 2 👉',
+            'Hall 3': 'HALL 3 👉',
+            'Hall 5': '🫵 HALL 5'
+        };
 
         // புதுப்பிக்கப்பட்ட நேர அட்டவணை (New Schedules)
         const schedules = [
@@ -287,7 +296,8 @@
                 uniqueHalls.forEach(hall => {
                     const hallDiv = document.createElement('div');
                     hallDiv.className = 'hall';
-                    hallDiv.innerText = hall.toUpperCase();
+                    // திசைச் குறியீட்டுடன் ஹால் பெயர் அமைத்தல்
+                    hallDiv.innerText = hallIcons[hall] || hall.toUpperCase();
                     hallList.appendChild(hallDiv);
                 });
             } else if (isUpcomingActive) {
@@ -304,7 +314,6 @@
                 hallList.style.display = 'none';
                 upcomingAlert.style.display = 'none';
 
-                // வீடியோ ஏற்கனவே ஓடிக் கொண்டிருந்தால் அதை மீண்டும் Restart செய்யாது!
                 if (videoContainer.style.display === 'none') {
                     videoContainer.style.display = 'block';
                     promoVideo.muted = true;
